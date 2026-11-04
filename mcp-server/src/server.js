@@ -6,6 +6,9 @@ import { z } from "zod";
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
+process.on("uncaughtException", (error) => console.error("[startup] Uncaught exception:", error));
+process.on("unhandledRejection", (reason) => console.error("[startup] Unhandled rejection:", reason));
+
 app.get("/", (_req, res) => {
   res.status(200).json({
     name: "All-School Simulation – A Busink Simulation",
@@ -187,11 +190,8 @@ app.post("/mcp", async (req, res) => {
     await mcpServer.connect(transport);
     await transport.handleRequest(req, res, req.body);
   } catch (error) {
-    console.error("MCP request failed:", error);
+    console.error("[mcp] Request failed:", error);
     if (!res.headersSent) res.status(500).json({ error: "Internal server error" });
-  } finally {
-    await transport.close();
-    await mcpServer.close();
   }
 });
 
@@ -200,6 +200,10 @@ app.all("/mcp", (req, res) => {
 });
 
 const port = Number(process.env.PORT || 3000);
-app.listen(port, "0.0.0.0", () => {
-  console.log(`All-School Simulation MCP server listening on port ${port}`);
+const httpServer = app.listen(port, "0.0.0.0", () => {
+  console.log("[startup] All-School Simulation MCP server listening on 0.0.0.0:" + port);
+});
+httpServer.on("error", (error) => {
+  console.error("[startup] HTTP server error:", error);
+  process.exitCode = 1;
 });
