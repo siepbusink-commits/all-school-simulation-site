@@ -1,5 +1,4 @@
 import express from "express";
-import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
@@ -182,21 +181,17 @@ Controleer alle interacties, vakinhoudelijke consistentie, begrijpelijkheid voor
 app.post("/mcp", async (req, res) => {
   const mcpServer = createMcpServer();
   const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: () => randomUUID(),
-    onsessioninitialized: (sessionId) => {
-      transports.set(sessionId, transport);
-    }
+    sessionIdGenerator: undefined
   });
-  const transports = app.locals.transports ??= new Map();
-  transport.onclose = () => {
-    if (transport.sessionId) transports.delete(transport.sessionId);
-  };
   try {
     await mcpServer.connect(transport);
     await transport.handleRequest(req, res, req.body);
   } catch (error) {
     console.error("MCP request failed:", error);
     if (!res.headersSent) res.status(500).json({ error: "Internal server error" });
+  } finally {
+    await transport.close();
+    await mcpServer.close();
   }
 });
 
