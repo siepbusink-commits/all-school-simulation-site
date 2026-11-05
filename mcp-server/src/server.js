@@ -40,6 +40,11 @@ function createMcpServer() {
       visualStyle: z.string().optional().describe("Vormgeving en gebruikerservaring"),
       additionalRequirements: z.string().optional().describe("Aanvullende wensen en eisen")
     },
+    {
+      readOnlyHint: true,
+      destructiveHint: false,
+      openWorldHint: false
+    },
     async (input) => {
       const fields = [
         ["Onderwijsniveau en leerjaar", input.level],
@@ -81,6 +86,11 @@ function createMcpServer() {
         visualStyle: z.string().optional(),
         summaryApproved: z.boolean().optional()
       })
+    },
+    {
+      readOnlyHint: true,
+      destructiveHint: false,
+      openWorldHint: false
     },
     async ({ design }) => {
       const required = {
@@ -134,6 +144,11 @@ function createMcpServer() {
         additionalRequirements: z.string().optional()
       }),
       explicitApproval: z.boolean().describe("Moet true zijn: expliciet akkoord van de docent op de volledige ontwerpsamenvatting.")
+    },
+    {
+      readOnlyHint: true,
+      destructiveHint: false,
+      openWorldHint: false
     },
     async ({ design, explicitApproval }) => {
       if (!explicitApproval) {
