@@ -19,6 +19,18 @@ app.get("/", (_req, res) => {
 
 app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 
+// OpenAI plugin-directory domain verification.
+// Set OPENAI_APPS_CHALLENGE in the Render environment after the submission
+// portal provides the exact token. The endpoint must return that token verbatim.
+app.get("/.well-known/openai-apps-challenge", (_req, res) => {
+  const token = process.env.OPENAI_APPS_CHALLENGE;
+  if (!token) {
+    return res.status(503).type("text/plain").send("Challenge token is not configured.");
+  }
+  res.set("Cache-Control", "no-store");
+  return res.status(200).type("text/plain").send(token);
+});
+
 function createMcpServer() {
   const server = new McpServer({
     name: "all-school-simulation",
