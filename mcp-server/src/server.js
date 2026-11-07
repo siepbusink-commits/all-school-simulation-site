@@ -39,7 +39,7 @@ function createMcpServer() {
 
   server.tool(
     "structure_simulation_design",
-    "Zet de informatie van een docent om in een overzichtelijk simulatieontwerp en benoem ontbrekende onderdelen. Genereer nog geen Lovable-prompt.",
+    "Zet de informatie van een docent om in een overzichtelijk simulatieontwerp en benoem ontbrekende onderdelen. Genereer nog geen bouwopdracht.",
     {
       subject: z.string().min(1).describe("Schoolvak of vakken"),
       level: z.string().optional().describe("Onderwijsniveau en leerjaar"),
@@ -136,8 +136,8 @@ function createMcpServer() {
   );
 
   server.tool(
-    "generate_lovable_prompt",
-    "Genereert een zelfstandige Lovable-prompt voor een educatieve simulatie. Alleen uitvoeren wanneer de docent het complete ontwerp expliciet heeft goedgekeurd.",
+    "generate_build_prompt",
+    "Genereert een zelfstandige, platformneutrale bouwopdracht voor een educatieve simulatie. Alleen uitvoeren wanneer de docent het complete ontwerp expliciet heeft goedgekeurd.",
     {
       design: z.object({
         subject: z.string().min(1),
